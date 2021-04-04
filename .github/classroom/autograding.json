@@ -33,7 +33,7 @@
     {
       "name": "Running Group A Tests",
       "setup": "",
-      "run": "bash run_test.sh Group1Tests_A",
+      "run": "bash run_test.sh A",
       "input": "",
       "output": "",
       "comparison": "included",
