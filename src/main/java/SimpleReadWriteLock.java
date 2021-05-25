@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author CS 212 Software Development
  * @author University of San Francisco
- * @version Spring 2021
+ * @version Summer 2021
  */
 public class SimpleReadWriteLock {
 	/** The conditional lock used for reading. */
@@ -53,7 +53,7 @@ public class SimpleReadWriteLock {
 	 * @see <a href="https://wiki.sei.cmu.edu/confluence/display/java/LCK00-J.+Use+private+final+lock+objects+to+synchronize+classes+that+may+interact+with+untrusted+code">
 	 *      SEI CERT Oracle Coding Standard for Java</a>
 	 */
-	private Object lock;
+	private final Object lock;
 
 	/**
 	 * Initializes a new simple read/write lock.
@@ -146,26 +146,25 @@ public class SimpleReadWriteLock {
 			// TODO You may remove the log messages if you do not want to use logging
 			log.debug("Acquiring read lock...");
 			
-			// TODO Note the lock object being used here and elsewhere
-			synchronized (lock) {
-				while (writers > 0) {
-					try {
+			try {
+				// TODO Note the lock object being used here and elsewhere
+				synchronized (lock) {
+					while (writers > 0) {
 						log.debug("Waiting for read lock...");
 						lock.wait();
-						
-						log.debug("Woke up waiting for read lock...");
 					}
-					catch (InterruptedException ex) {
-						log.catching(Level.DEBUG, ex);
-						Thread.currentThread().interrupt();
-					}
+					
+					log.debug("Woke up waiting for read lock...");
+					assert writers == 0;
+					readers++;
 				}
-
-				assert writers == 0;
-				readers++;
+				
+				log.debug("Acquired read lock.");
 			}
-			
-			log.debug("Acquired read lock.");
+			catch (InterruptedException ex) {
+				log.catching(Level.DEBUG, ex);
+				Thread.currentThread().interrupt();
+			}
 		}
 
 		/**

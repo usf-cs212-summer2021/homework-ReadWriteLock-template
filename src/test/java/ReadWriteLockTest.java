@@ -8,11 +8,10 @@ import org.junit.jupiter.api.TestMethodOrder;
  *
  * @author CS 212 Software Development
  * @author University of San Francisco
- * @version Spring 2021
+ * @version Summer 2021
  */
 @TestMethodOrder(MethodName.class)
 public class ReadWriteLockTest {
-
 	/**
 	 * This is the test class run by Github Actions. It should not be the test
 	 * class run in Eclipse.

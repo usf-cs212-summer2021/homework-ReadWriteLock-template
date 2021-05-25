@@ -31,11 +31,10 @@ import org.junit.jupiter.api.function.Executable;
  *
  * @author CS 212 Software Development
  * @author University of San Francisco
- * @version Spring 2021
+ * @version Summer 2021
  */
 @TestMethodOrder(MethodName.class)
 public class ThreadSafeIndexedSetTest {
-
 	/** Default timeout for each test. */
 	public static final Duration TIMEOUT = Duration.ofSeconds(15);
 	

@@ -14,7 +14,7 @@ import java.util.TreeSet;
  *
  * @author CS 212 Software Development
  * @author University of San Francisco
- * @version Spring 2021
+ * @version Summer 2021
  */
 public class IndexedSet<E> {
 	/** Set of elements */
@@ -76,7 +76,6 @@ public class IndexedSet<E> {
 	 * @see Set#addAll(Collection)
 	 */
 	public boolean addAll(IndexedSet<E> elements) {
-		// NOTE: New method compared to lecture version
 		return set.addAll(elements.set);
 	}
 
@@ -128,7 +127,6 @@ public class IndexedSet<E> {
 	 * @see #get(int)
 	 */
 	public E first() throws NoSuchElementException {
-		// NOTE: New method compared to lecture version
 		checkEmpty();
 		return get(0);
 	}
@@ -142,7 +140,6 @@ public class IndexedSet<E> {
 	 * @see #get(int)
 	 */
 	public E last() throws NoSuchElementException {
-		// NOTE: New method compared to lecture version
 		checkEmpty();
 		return get(set.size() - 1);
 	}
@@ -152,7 +149,6 @@ public class IndexedSet<E> {
 	 * @throws NoSuchElementException if empty.
 	 */
 	private void checkEmpty() throws NoSuchElementException {
-		// NOTE: New method compared to lecture version
 		if (set.isEmpty()) {
 			throw new NoSuchElementException();
 		}
@@ -164,7 +160,6 @@ public class IndexedSet<E> {
 	 * @return unsorted copy
 	 */
 	public IndexedSet<E> unsortedCopy() {
-		// NOTE: Different implementation compared to lecture version
 		return copy(false);
 	}
 
@@ -174,7 +169,6 @@ public class IndexedSet<E> {
 	 * @return sorted copy
 	 */
 	public IndexedSet<E> sortedCopy() {
-		// NOTE: Different implementation compared to lecture version
 		return copy(true);
 	}
 	
@@ -186,7 +180,6 @@ public class IndexedSet<E> {
 	 *         otherwise an unsorted copy of the indexed set
 	 */
 	public IndexedSet<E> copy(boolean sorted) {
-		// NOTE: Different implementation compared to lecture version
 		IndexedSet<E> copy = new IndexedSet<>(sorted);
 		copy.addAll(set);
 		return copy;

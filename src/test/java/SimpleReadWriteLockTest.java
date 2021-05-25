@@ -30,11 +30,10 @@ import org.opentest4j.AssertionFailedError;
  *
  * @author CS 212 Software Development
  * @author University of San Francisco
- * @version Spring 2021
+ * @version Summer 2021
  */
 @TestMethodOrder(MethodName.class)
 public class SimpleReadWriteLockTest {
-
 	/** Specifies how long a worker thread should sleep. */
 	public static final long WORKER_SLEEP = 500;
 
@@ -53,36 +52,6 @@ public class SimpleReadWriteLockTest {
 	@Nested
 	@TestMethodOrder(OrderAnnotation.class)
 	public class A_ReadLockTest {
-		/** The actual output. */
-		public List<String> actual;
-		
-		/** The timeout to use for these tests. */
-		public long timeout;
-		
-		/** The parent lock object (used to create child lock). */
-		public SimpleReadWriteLock parentLock;
-		
-		/** The child lock (created from the parent lock, lock actually tested). */
-		public SimpleLock childLock;
-		
-		/** The prefix to use in output. */
-		public String prefix;
-		
-		/**
-		 * Sets up the test methods.
-		 * 
-		 * @param info the test information
-		 */
-		@BeforeEach
-		public void setup(TestInfo info) {
-			actual = Collections.synchronizedList(new ArrayList<>());
-			parentLock = new SimpleReadWriteLock();
-
-			timeout = Math.round((WORKER_SLEEP * 1.25) + OFFSET_SLEEP);
-			childLock = parentLock.readLock();
-			prefix = "Read";
-		}
-		
 		/**
 		 * Tests the child lock behaves as expected for multiple worker threads. Since
 		 * there are only reads, no blocking should occur.
@@ -123,16 +92,12 @@ public class SimpleReadWriteLockTest {
 			Thread[] workers = { new MultipleLockWorker(childLock, actual, prefix, locks) };
 			testOutput(workers, actual, expected, timeout);
 		}
-	}
-	
-	/**
-	 * Group of unit tests for the write lock.
-	 */
-	@Nested
-	@TestMethodOrder(OrderAnnotation.class)
-	public class B_WriteLockTest {
+		
 		/** The actual output. */
 		public List<String> actual;
+		
+		/** The timeout to use for these tests. */
+		public long timeout;
 		
 		/** The parent lock object (used to create child lock). */
 		public SimpleReadWriteLock parentLock;
@@ -152,10 +117,19 @@ public class SimpleReadWriteLockTest {
 		public void setup(TestInfo info) {
 			actual = Collections.synchronizedList(new ArrayList<>());
 			parentLock = new SimpleReadWriteLock();
-			childLock = parentLock.writeLock();
-			prefix = "Write";
+
+			timeout = Math.round((WORKER_SLEEP * 1.25) + OFFSET_SLEEP);
+			childLock = parentLock.readLock();
+			prefix = "Read";
 		}
-		
+	}
+	
+	/**
+	 * Group of unit tests for the write lock.
+	 */
+	@Nested
+	@TestMethodOrder(OrderAnnotation.class)
+	public class B_WriteLockTest {		
 		/**
 		 * Tests the child lock behaves as expected for multiple worker threads. Since
 		 * there are multiple different writer threads, blocking should occur.
@@ -198,6 +172,31 @@ public class SimpleReadWriteLockTest {
 			long timeout = Math.round((WORKER_SLEEP * 1.25) + OFFSET_SLEEP);
 			Thread[] workers = { new MultipleLockWorker(childLock, actual, prefix, locks) };
 			testOutput(workers, actual, expected, timeout);
+		}
+		
+		/** The actual output. */
+		public List<String> actual;
+		
+		/** The parent lock object (used to create child lock). */
+		public SimpleReadWriteLock parentLock;
+		
+		/** The child lock (created from the parent lock, lock actually tested). */
+		public SimpleLock childLock;
+		
+		/** The prefix to use in output. */
+		public String prefix;
+		
+		/**
+		 * Sets up the test methods.
+		 * 
+		 * @param info the test information
+		 */
+		@BeforeEach
+		public void setup(TestInfo info) {
+			actual = Collections.synchronizedList(new ArrayList<>());
+			parentLock = new SimpleReadWriteLock();
+			childLock = parentLock.writeLock();
+			prefix = "Write";
 		}
 	}
 	
