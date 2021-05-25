@@ -24,6 +24,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.function.Executable;
@@ -44,7 +45,7 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 public class ThreadSafeIndexedSetTest {
 	/** Default timeout for each test. */
 	public static final Duration TIMEOUT = Duration.ofSeconds(15);
-	
+
 	/**
 	 * Tests add operations.
 	 */
@@ -109,7 +110,7 @@ public class ThreadSafeIndexedSetTest {
 			assertConcurrent(workers, expected, actual);
 		}
 	}
-	
+
 	/**
 	 * Tests mostly get operations.
 	 */
@@ -185,7 +186,7 @@ public class ThreadSafeIndexedSetTest {
 			assertConcurrent(workers, expected, actual);
 		}
 	}
-	
+
 	/**
 	 * Tests mixed read and write operations.
 	 */
@@ -221,10 +222,11 @@ public class ThreadSafeIndexedSetTest {
 			assertConcurrent(workers, expected, actual);
 		}
 	}
-	
+
 	/**
 	 * Tests approach for {@link ThreadSafeIndexedSet} class.
 	 */
+	@Tag("approach")
 	@Nested
 	@TestMethodOrder(OrderAnnotation.class)
 	public class I_ApproachTests {
@@ -237,7 +239,7 @@ public class ThreadSafeIndexedSetTest {
 		@Test
 		public void testSynchronized() {
 			Method[] threadMethods = ThreadSafeIndexedSet.class.getMethods();
-			
+
 			Set<String> syncMethods = Arrays.stream(threadMethods)
 					.filter(method -> Modifier.isSynchronized(method.getModifiers()))
 					.map(method -> methodName(method))
@@ -246,7 +248,7 @@ public class ThreadSafeIndexedSetTest {
 			String debug = "%nThese methods should NOT be synchronized (use locks instead): %s%n";
 			Assertions.assertTrue(syncMethods.isEmpty(), debug.formatted(syncMethods.toString()));
 		}
-		
+
 		/**
 		 * Tests that all of the required methods are overridden. This test will not
 		 * detect whether the methods were overridden correctly however!
@@ -256,7 +258,7 @@ public class ThreadSafeIndexedSetTest {
 		public void testOverridden() {
 			Method[] singleMethods = IndexedSet.class.getDeclaredMethods();
 			Method[] threadMethods = ThreadSafeIndexedSet.class.getDeclaredMethods();
-			
+
 			Set<String> expectedMethods = Arrays.stream(singleMethods)
 					.map(method -> methodName(method))
 					.filter(method -> !(method.endsWith("sortedCopy()") || method.endsWith("checkEmpty()")))
@@ -273,7 +275,7 @@ public class ThreadSafeIndexedSetTest {
 			String debug = "%nThe following methods were not properly overridden: %s%n";
 			Assertions.assertTrue(expectedMethods.isEmpty(), () -> debug.formatted(expectedMethods.toString()));
 		}
-		
+
 		/**
 		 * Tests that all of the required methods are overridden. This test will not
 		 * detect whether the methods were overridden correctly however!
@@ -283,12 +285,12 @@ public class ThreadSafeIndexedSetTest {
 		public void testNotOverridden() {
 			Method[] singleMethods = IndexedSet.class.getDeclaredMethods();
 			Method[] threadMethods = ThreadSafeIndexedSet.class.getDeclaredMethods();
-			
+
 			Set<String> expected = Arrays.stream(singleMethods)
 					.map(method -> methodName(method))
 					.filter(method -> method.endsWith("sortedCopy()") || method.endsWith("checkEmpty()"))
 					.collect(Collectors.toSet());
-			
+
 			Set<String> actual = Arrays.stream(threadMethods)
 					.map(method -> methodName(method))
 					.filter(method -> expected.contains(method))
@@ -298,7 +300,7 @@ public class ThreadSafeIndexedSetTest {
 
 			Assertions.assertTrue(actual.isEmpty(), () -> debug.formatted(actual.toString()));
 		}
-		
+
 		/**
 		 * Causes this group of tests to fail if the other non-approach tests are
 		 * not yet passing.
@@ -324,7 +326,7 @@ public class ThreadSafeIndexedSetTest {
 					"Must pass other tests to earn credit for approach group!");
 		}
 	}
-	
+
 	/** Forces several write operations. */
 	public static class AddWorker extends Thread {
 		/** Actual results. */
@@ -512,13 +514,13 @@ public class ThreadSafeIndexedSetTest {
 			pool.shutdown();
 			pool.awaitTermination(TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
 		};
-		
-		Assertions.assertTimeoutPreemptively(TIMEOUT, action, 
+
+		Assertions.assertTimeoutPreemptively(TIMEOUT, action,
 				"\nTest timed out. Check for deadlock (too much locking or missing unlocks)!\n");
 
 		Assertions.assertEquals(expected.size(), actual.size(),
 				"\nUnexpected number of elements. Check for lost reads or write operations (too little or incorrect locking).\n");
-				
+
 		Assertions.assertEquals(expected.toString(), actual.sortedCopy().toString(),
 				"\nUnexpected content. Check for lost reads or write operations (too little or incorrect locking).\n");
 	}
